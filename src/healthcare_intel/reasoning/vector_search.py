@@ -66,6 +66,7 @@ def semantic_search(
     query_text: str,
     config: VectorSearchConfig | None = None,
     columns: list[str] | None = None,
+    filters: dict[str, Any] | None = None,
     num_results: int = 10,
 ) -> list[dict[str, Any]]:
     config = config or VectorSearchConfig()
@@ -78,6 +79,7 @@ def semantic_search(
         result = index.similarity_search(
             query_text=query_text,
             columns=columns or [config.primary_key, config.text_column],
+            filters=filters,
             num_results=num_results,
         )
 

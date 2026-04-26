@@ -118,8 +118,9 @@ Rules:
             req_caps = [c for c in result.get("required_capabilities", []) if c in schema_cols]
             
             state = result.get("required_state")
-            if state and state.lower() not in [s.lower() for s in known_states]:
-                state = None
+            if state:
+                state_match = next((s for s in known_states if s.lower() == state.lower()), None)
+                state = state_match
 
             facility_type = result.get("required_facility_type")
             if facility_type:
@@ -186,13 +187,24 @@ def run_query(
         # 1. Semantic Vector Search (Optional)
         semantic_results = []
         if settings.use_vector_search:
+            # Build Metadata Filters explicitly for the vector engine
+            query_filters = {}
+            if parsed.required_state:
+                query_filters["address_stateOrRegion"] = parsed.required_state
+            for cap in parsed.required_capabilities:
+                query_filters[cap] = True
+
             trace_steps.append({
                 "agent": "VectorSearch",
-                "action": f"Executed semantic search against Mosaic AI index",
-                "detail": f"Model identified deeper conceptual links for '{query}'"
+                "action": "Semantic search with Metadata Pre-Filtering",
+                "detail": f"Executed against Mosaic AI. Database filters: {query_filters}"
             })
-            # Default to fetching a broad set then applying our filters locally
-            vec_res = semantic_search(query, num_results=200)
+            # Fetch using native Databricks Vector Search filters
+            vec_res = semantic_search(
+                query_text=query, 
+                filters=query_filters if query_filters else None,
+                num_results=200
+            )
             if vec_res:
                 semantic_results = [
                     str(r.get("facility_id"))

@@ -1,0 +1,14 @@
+artifact_uri: file:///Users/ayushsingh/Developer/hack-nation/mlruns/808785889248616530/019f6072154c4cd9aecaf4eaf050d0f6/artifacts
+end_time: 1777177126857
+entry_point_name: ''
+experiment_id: '808785889248616530'
+lifecycle_stage: active
+run_id: 019f6072154c4cd9aecaf4eaf050d0f6
+run_name: run_20260426_041846
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1777177126769
+status: 4
+tags: []
+user_id: ayushsingh

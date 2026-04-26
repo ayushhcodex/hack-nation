@@ -29,5 +29,8 @@ class Settings:
     databricks_token: str = os.getenv("DATABRICKS_TOKEN", "")
     llm_endpoint_name: str = os.getenv("LLM_ENDPOINT_NAME", "databricks-meta-llama-3-1-70b-instruct")
 
+    use_unity_catalog: bool = os.getenv("USE_UNITY_CATALOG", "false").lower() == "true"
+    uc_volume_path: str = os.getenv("UC_VOLUME_PATH", "/Volumes/main/default/healthintel")
+
 
 settings = Settings()
