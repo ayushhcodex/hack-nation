@@ -68,6 +68,7 @@ async function runSearch() {
     
     const btn = document.getElementById('search-btn');
     btn.innerHTML = '<span class="loading-spinner"></span>';
+    clearStrategy();
     
     try {
         const res = await fetch(`${API}/api/query`, {
@@ -81,6 +82,9 @@ async function runSearch() {
         renderResults(data.results || [], data.summary || {}, data.exact_match !== false);
         renderQueryEvaluation(data.evaluation || null);
         renderChainOfThought(data.chain_of_thought || []);
+
+        // Trigger Genie Strategy in background
+        loadGenieStrategy(query);
     } catch (e) {
         console.error('Query failed:', e);
         document.getElementById('facility-results').innerHTML = 
@@ -91,6 +95,66 @@ async function runSearch() {
     }
     
     btn.innerHTML = '<span>Search</span><span class="btn-arrow">→</span>';
+}
+
+function clearStrategy() {
+    const container = document.getElementById('strategy-container');
+    container.innerHTML = '';
+    container.style.display = 'none';
+}
+
+async function loadGenieStrategy(query) {
+    const container = document.getElementById('strategy-container');
+    container.style.display = 'block';
+    container.innerHTML = `
+        <div class="strategy-card">
+            <div class="strategy-header">
+                <div class="strategy-label">🧠 Agent Planning Intervention...</div>
+            </div>
+            <div class="loading-spinner" style="margin: 0 auto;"></div>
+        </div>
+    `;
+
+    try {
+        const res = await fetch(`${API}/api/genie/strategy`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ query }),
+        });
+        const data = await res.json();
+        if (data.status === 'ok' && data.data) {
+            renderGenieStrategy(data.data);
+        } else {
+            container.style.display = 'none';
+        }
+    } catch (e) {
+        console.error('Genie failed:', e);
+        container.style.display = 'none';
+    }
+}
+
+function renderGenieStrategy(data) {
+    const container = document.getElementById('strategy-container');
+    const priority = data.priority || 'medium';
+    
+    // Simple markdown-ish bolding
+    let strategy = data.strategy || '';
+    strategy = strategy.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+    strategy = strategy.replace(/\n\n/g, '<br><br>');
+    strategy = strategy.replace(/- (.*)/g, '<li>$1</li>');
+    if (strategy.includes('<li>')) strategy = '<ul>' + strategy + '</ul>';
+
+    container.innerHTML = `
+        <div class="strategy-card">
+            <div class="strategy-header">
+                <div class="strategy-label">🚀 Agentic Crisis Strategy Recommended</div>
+                <div class="strategy-priority ${priority}">${priority}</div>
+            </div>
+            <div class="strategy-body">
+                ${strategy}
+            </div>
+        </div>
+    `;
 }
 
 function renderQueryEvaluation(evaluation) {

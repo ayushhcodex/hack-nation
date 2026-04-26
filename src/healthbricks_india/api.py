@@ -318,6 +318,38 @@ def query_facilities(payload: QueryRequest) -> dict:
     }
 
 
+@app.post("/api/genie/strategy")
+def get_genie_strategy(payload: QueryRequest) -> dict:
+    """One-shot strategy generation using the Genie Orchestrator's internal tool."""
+    from healthbricks_india.agents.genie_orchestrator import GenieOrchestrator, GenieTask
+    
+    facilities = _load_facilities()
+    deserts = _load_deserts()
+    
+    # 1. Get results for context
+    results = run_query(facilities, payload.query, top_k=5)
+    
+    # 2. Extract deserts in the same state (if any)
+    state = results.iloc[0]["address_stateOrRegion"] if not results.empty else None
+    regional_deserts = []
+    if state:
+        regional_deserts = deserts[deserts["address_stateOrRegion"] == state].head(3).to_dict(orient="records")
+    
+    # 3. Call the strategizer
+    orchestrator = GenieOrchestrator()
+    task = GenieTask(
+        action="generate_crisis_strategy",
+        params={
+            "query": payload.query,
+            "facility_results": results.to_dict(orient="records"),
+            "desert_data": regional_deserts
+        }
+    )
+    
+    res = orchestrator.execute(task)
+    return res
+
+
 def _build_query_trace(facilities: pd.DataFrame, payload: QueryRequest, result: pd.DataFrame) -> list[dict]:
     """Generate Chain of Thought steps for query transparency."""
     steps = result.attrs.get("trace_steps", [])

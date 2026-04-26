@@ -66,6 +66,10 @@ Available Tools (Actions):
    - Description: A fast vector-only retrieval function.
    - Required Params: "query" (str), "endpoint_name" (str), "index_name" (str)
 
+5. "generate_crisis_strategy"
+   - Description: Synthesizes search results and desert gaps into a 3-point tactical response plan.
+   - Required Params: "query" (str), "facility_results" (list), "desert_data" (list)
+
 Output Format: Provide a strict JSON array of tasks to execute in order. Do NOT include markdown blocks.
 [
   {
@@ -173,5 +177,40 @@ Output Format: Provide a strict JSON array of tasks to execute in order. Do NOT 
                 num_results=int(task.params.get("num_results", 10)),
             )
             return {"status": "ok", "action": action, "hits": hits}
+
+        if action == "generate_crisis_strategy":
+            # Call LLM to synthesize a plan
+            url = f"{settings.databricks_host.rstrip('/')}/serving-endpoints/{settings.llm_endpoint_name}/invocations"
+            headers = {
+                "Authorization": f"Bearer {settings.databricks_token}",
+                "Content-Type": "application/json"
+            }
+            
+            prompt = f"""
+You are a Crisis Response Strategist for HealthBricks India. 
+User Intent: {task.params['query']}
+Top Facilities Found: {json.dumps(task.params['facility_results'][:5], indent=2)}
+Regional Desert Gaps: {json.dumps(task.params['desert_data'][:3], indent=2)}
+
+Task: Generate a high-impact, 3-point Tactical Intervention Plan. 
+Focus on:
+1. Resource Reallocation (moving supply from high-trust to high-need).
+2. Immediate Triage (nearest reliable facility for the desert).
+3. Strategic Recommendations (long-term infrastructure advice).
+
+Format: Return a JSON object with a 'strategy' string (markdown formatted) and a 'priority' (critical|high|medium).
+"""
+            data = {
+                "messages": [{"role": "user", "content": prompt}],
+                "max_tokens": 1000,
+                "temperature": 0.3
+            }
+            
+            req = urllib.request.Request(url, data=json.dumps(data).encode("utf-8"), headers=headers)
+            with urllib.request.urlopen(req, timeout=20) as res:
+                resp_data = json.loads(res.read().decode("utf-8"))
+                content = resp_data["choices"][0]["message"]["content"]
+                content = content.replace("```json", "").replace("```", "").strip()
+                return {"status": "ok", "action": action, "data": json.loads(content)}
 
         raise ValueError(f"Unsupported Genie action: {task.action}")
