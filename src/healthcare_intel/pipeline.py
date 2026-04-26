@@ -134,6 +134,32 @@ def run_pipeline(
         tracker.log_metrics(estimate_trace_cost(num_rows=len(facilities), text_chars=text_chars))
         tracker.log_artifact(trace_file)
 
+        # Stage 8: Unity Catalog Volume Sync
+        if settings.use_unity_catalog:
+            trace.add("sync_unity_catalog_started")
+            with tracker.span("sync_unity_catalog"):
+                print(f"[Pipeline] Syncing files to Unity Catalog Volume: {settings.uc_volume_path}")
+                try:
+                    from databricks.sdk import WorkspaceClient
+                    import os
+                    os.environ["DATABRICKS_HOST"] = settings.databricks_host
+                    os.environ["DATABRICKS_TOKEN"] = settings.databricks_token
+                    
+                    client = WorkspaceClient()
+                    
+                    with open(facilities_out, "rb") as f:
+                        client.files.upload(f"{settings.uc_volume_path}/facilities_enriched.parquet", f, overwrite=True)
+                    with open(deserts_out, "rb") as f:
+                        client.files.upload(f"{settings.uc_volume_path}/specialized_deserts.parquet", f, overwrite=True)
+                    
+                    print(f"[Pipeline] Unity Catalog sync successful")
+                    trace.add("sync_unity_catalog_completed", success=True)
+                except Exception as e:
+                    print(f"[Pipeline] Unity Catalog sync failed: {e}")
+                    trace.add("sync_unity_catalog_completed", success=False, error=str(e))
+        else:
+            print("[Pipeline] Unity Catalog sync skipped (USE_UNITY_CATALOG=false)")
+
         # Stage 9: Vector Search Index Sync
         if settings.use_vector_search:
             trace.add("vector_search_sync_started")
@@ -151,3 +177,11 @@ def run_pipeline(
 
     print(f"[Pipeline] Complete! Outputs saved to {output_dir.resolve()}")
     return facilities, deserts
+
+if __name__ == "__main__":
+    from healthcare_intel.config import settings
+    run_pipeline(
+        dataset_path=settings.dataset_path,
+        output_dir=settings.output_dir, 
+        enable_mlflow=True
+    )
