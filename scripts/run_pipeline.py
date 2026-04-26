@@ -3,8 +3,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
-from healthcare_intel.pipeline import run_pipeline
-from healthcare_intel.reasoning.vector_search import VectorSearchConfig, sync_index
+from healthbricks_india.pipeline import run_pipeline
+from healthbricks_india.reasoning.vector_search import VectorSearchConfig, sync_index
 
 
 def main() -> None:

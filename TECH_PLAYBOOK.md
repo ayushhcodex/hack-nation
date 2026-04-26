@@ -1,4 +1,4 @@
-# HealthIntel India: Technical Playbook & Demo Cheat Sheet
+# HealthBricks India: Technical Playbook & Demo Cheat Sheet
 
 This document contains the complete architectural breakdown of the Agentic System. Use this as your master cheat sheet for answering Judge Q&A during your pitch.
 
@@ -18,12 +18,12 @@ This document contains the complete architectural breakdown of the Agentic Syste
 
 ## 2. FILE STRUCTURE
 **Key Files & Purpose**
-- `src/healthcare_intel/agents/multi_pass_extractor.py`: The core LLM extraction engine converting messy raw text into Strict JSON.
-- `src/healthcare_intel/agents/genie_orchestrator.py`: The LangChain-style Autonomous Router mapping natural language to backend Tool Functions.
-- `src/healthcare_intel/reasoning/query_engine.py`: The AI Query Planner that parses user queries (e.g. "rural clinics") into search parameters.
-- `src/healthcare_intel/reasoning/vector_search.py`: The interface layer for Databricks Mosaic AI Hybrid Search.
-- `src/healthcare_intel/validation/validator_agent.py`: The Medical Auditor LLM that spots logic contradictions.
-- `src/healthcare_intel/validation/trust_scorer.py`: The mathematical engine grading facility reliability.
+- `src/healthbricks_india/agents/multi_pass_extractor.py`: The core LLM extraction engine converting messy raw text into Strict JSON.
+- `src/healthbricks_india/agents/genie_orchestrator.py`: The LangChain-style Autonomous Router mapping natural language to backend Tool Functions.
+- `src/healthbricks_india/reasoning/query_engine.py`: The AI Query Planner that parses user queries (e.g. "rural clinics") into search parameters.
+- `src/healthbricks_india/reasoning/vector_search.py`: The interface layer for Databricks Mosaic AI Hybrid Search.
+- `src/healthbricks_india/validation/validator_agent.py`: The Medical Auditor LLM that spots logic contradictions.
+- `src/healthbricks_india/validation/trust_scorer.py`: The mathematical engine grading facility reliability.
 - `frontend/app.js` & `styles.css`: The map clustering engine and glassmorphism interface.
 
 ---

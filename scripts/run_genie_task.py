@@ -3,7 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 
-from healthcare_intel.agents.genie_orchestrator import GenieOrchestrator, GenieTask
+from healthbricks_india.agents.genie_orchestrator import GenieOrchestrator, GenieTask
 
 
 def main() -> None:

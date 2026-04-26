@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "agentic-healthcare-intel"
+name = "healthbricks-india"
 version = "0.1.0"
-description = "Agentic Healthcare Intelligence System for Indian medical facility discovery and trust scoring"
+description = "HealthBricks India — Agentic Healthcare Intelligence for Indian medical facility discovery and trust scoring"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

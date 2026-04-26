@@ -1,6 +1,6 @@
 <div align="center">
 
-# HealthIntel India 🏥 
+# HealthBricks India 🏥 
 ### Agentic Healthcare Intelligence mapped for 1.4 Billion Lives
 
 *A Databricks for Good Hackathon Project*
@@ -8,7 +8,7 @@
 </div>
 
 ## 📖 Overview
-HealthIntel India is a fully autonomous, Multi-Agent AI System designed to parse, synthesize, and map the medical capabilities of over 10,000 Indian healthcare facilities. Built for the *"Serving a Nation"* problem statement, this system abandons rigid logic and simple SQL in favor of **Agentic Engineering**. It intelligently identifies critical Medical Deserts and produces verifiable Chain-of-Thought trust metrics for NGO health planners.
+HealthBricks India is a fully autonomous, Multi-Agent AI System designed to parse, synthesize, and map the medical capabilities of over 10,000 Indian healthcare facilities. Built for the *"Serving a Nation"* problem statement, this system abandons rigid logic and simple SQL in favor of **Agentic Engineering**. It intelligently identifies critical Medical Deserts and produces verifiable Chain-of-Thought trust metrics for NGO health planners.
 
 ## 🚀 The Tech Stack
 - **Core Intelligence Engine:** Databricks Foundation Model APIs (Specifically `Meta Llama 3.3 70B Instruct`).
@@ -73,13 +73,13 @@ python .\scripts\run_pipeline.py --dataset .\data\VF_Hackathon_Dataset_India_Lar
 3. **Start the API & Web Server:**
 ```bash
 # Linux/macOS
-python -m uvicorn --app-dir src healthcare_intel.api:app --reload --port 8000
+python -m uvicorn --app-dir src healthbricks_india.api:app --reload --port 8000
 ```
 
 ```powershell
 # Windows PowerShell
-python -m uvicorn --app-dir src healthcare_intel.api:app --reload --port 8000
+python -m uvicorn --app-dir src healthbricks_india.api:app --reload --port 8000
 ```
 
-4. **Explore HealthIntel:**
+4. **Explore HealthBricks:**
 Navigate to `http://127.0.0.1:8000/` to test the Discovery search engine and visualize the Medical Deserts Map in real-time.

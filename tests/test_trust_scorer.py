@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from healthcare_intel.validation.trust_scorer import score_trust
+from healthbricks_india.validation.trust_scorer import score_trust
 
 
 def test_trust_scorer_flags_missing_anesthesiologist() -> None:

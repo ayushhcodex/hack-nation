@@ -1,6 +1,6 @@
 import pandas as pd
 
-from healthcare_intel.reasoning.query_engine import run_query
+from healthbricks_india.reasoning.query_engine import run_query
 
 
 def test_query_engine_filters_by_capability_and_state() -> None:

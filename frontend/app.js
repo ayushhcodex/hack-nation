@@ -1,5 +1,5 @@
 /* ==========================================
-   HealthIntel India — Main Application Logic
+   HealthBricks India — Main Application Logic
    ==========================================*/
 
 const API = '';

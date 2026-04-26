@@ -4,8 +4,8 @@ from unittest.mock import patch, MagicMock
 from io import BytesIO
 
 # Import the actual implementations
-from healthcare_intel.agents.multi_pass_extractor import _llm_extract_capabilities, _pass2_unstructured
-from healthcare_intel.reasoning.query_engine import _llm_parse_query
+from healthbricks_india.agents.multi_pass_extractor import _llm_extract_capabilities, _pass2_unstructured
+from healthbricks_india.reasoning.query_engine import _llm_parse_query
 import pandas as pd
 
 # Fake successful Databricks LLM response payload for TASK 1 (Extraction)
@@ -75,9 +75,9 @@ def test_task2():
     mock_response.__enter__.return_value = mock_response
 
     with patch("urllib.request.urlopen", return_value=mock_response):
-        import healthcare_intel.config
+        import healthbricks_india.config
         # Override host temporarily to pass the missing host check
-        healthcare_intel.config.settings.databricks_host = "https://dbc-realworkspace.cloud.databricks.com"
+        healthbricks_india.config.settings.databricks_host = "https://dbc-realworkspace.cloud.databricks.com"
         
         parsed, reason = _llm_parse_query("query about delhi icu part time", ["Delhi", "Maharashtra"])
         print("[Pass] Successfully invoked LLM to parse generic text to constraints:")

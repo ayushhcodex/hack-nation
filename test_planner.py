@@ -1,5 +1,5 @@
 import pandas as pd
-from healthcare_intel.reasoning.query_engine import run_query
+from healthbricks_india.reasoning.query_engine import run_query
 import json
 from dotenv import load_dotenv
 
