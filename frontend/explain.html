@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How HealthIntel Works | Visual Pipeline</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0f172a; /* Slate 900 */
+            --node-bg: rgba(30, 41, 59, 0.7); /* Slate 800 transparent */
+            --node-border: #334155;
+            --text-main: #f8fafc;
+            --text-sub: #94a3b8;
+            --accent: #3b82f6;
+            --accent-glow: rgba(59, 130, 246, 0.5);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            margin-top: 20px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, #60a5fa, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .header p {
+            color: var(--text-sub);
+            font-size: 1.2rem;
+            max-width: 700px;
+            line-height: 1.6;
+            margin: 0 auto;
+        }
+
+        /* n8n Style Canvas */
+        .canvas {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            position: relative;
+            max-width: 1300px;
+            flex-wrap: nowrap;
+        }
+
+        /* Nodes */
+        .node {
+            background: var(--node-bg);
+            border: 1px solid var(--node-border);
+            border-radius: 12px;
+            padding: 22px;
+            width: 220px;
+            min-height: 250px;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .node:hover {
+            transform: translateY(-8px);
+            border-color: var(--accent);
+            box-shadow: 0 15px 30px var(--accent-glow);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--node-border);
+            padding-bottom: 15px;
+        }
+
+        .icon {
+            font-size: 22px;
+            margin-right: 12px;
+            background: #1e293b;
+            height: 44px;
+            width: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--node-border);
+            flex-shrink: 0;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        /* Colors for different node types */
+        .node.trigger .icon { color: #a78bfa; border-color: #a78bfa; box-shadow: 0 0 15px rgba(167, 139, 250, 0.3); }
+        .node.ai .icon { color: #3b82f6; border-color: #3b82f6; box-shadow: 0 0 15px rgba(59, 130, 246, 0.3); }
+        .node.logic .icon { color: #f59e0b; border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
+        .node.action .icon { color: #10b981; border-color: #10b981; box-shadow: 0 0 15px rgba(16, 185, 129, 0.3); }
+
+        .node-title {
+            font-weight: 700;
+            font-size: 1.05rem;
+            line-height: 1.2;
+        }
+
+        .node-desc {
+            font-size: 0.9rem;
+            color: var(--text-sub);
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        /* n8n Connectors (Wires) */
+        .connector-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            z-index: 1;
+            flex-shrink: 0;
+        }
+
+        .connector-line {
+            height: 4px;
+            width: 100%;
+            background: #1e293b;
+            position: relative;
+            overflow: hidden;
+            border-radius: 4px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .connector-dot {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 20px;
+            background: var(--accent);
+            border-radius: 5px;
+            box-shadow: 0 0 12px var(--accent), 0 0 20px var(--accent);
+            animation: flow 1.5s infinite linear;
+        }
+
+        @keyframes flow {
+            0% { left: -20px; }
+            100% { left: 100%; }
+        }
+
+        /* Connecting Dots on Nodes */
+        .port {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 14px;
+            height: 14px;
+            background: var(--bg);
+            border: 2px solid var(--text-sub);
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .port.in { left: -8px; }
+        .port.out { right: -8px; border-color: var(--accent); background: #1e293b; }
+
+        /* Demo Card inside Node */
+        .demo-card {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.75rem;
+            color: #10b981;
+            white-space: pre-wrap;
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.5);
+        }
+        .demo-card.error { color: #ef4444; }
+        .demo-card.info { color: #60a5fa; }
+        
+        .footer {
+            margin-top: 60px;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        @media (max-width: 1200px) {
+            .canvas { flex-direction: column; align-items: center; }
+            .node { width: 400px; min-height: auto; }
+            .connector-wrapper { width: 4px; height: 40px; }
+            .connector-line { height: 100%; width: 4px; }
+            .connector-dot { top: -20px; left: 0; width: 100%; height: 20px; animation: flow-vert 1.5s infinite linear; }
+            .port.in { top: -8px; left: 50%; transform: translateX(-50%); }
+            .port.out { bottom: -8px; right: auto; top: auto; left: 50%; transform: translateX(-50%); }
+            
+            @keyframes flow-vert {
+                0% { top: -20px; }
+                100% { top: 100%; }
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>How HealthIntel Works</h1>
+        <p>A beautifully simple visualization showing how messy, real-world hospital data is magically transformed into trusted Crisis Maps through an autonomous "Agentic" Pipeline.</p>
+    </div>
+
+    <div class="canvas">
+
+        <!-- Node 1: Ingestion -->
+        <div class="node trigger">
+            <div class="port out"></div>
+            <div class="node-header">
+                <div class="icon">📁</div>
+                <div class="node-title">1. Raw Messy Data</div>
+            </div>
+            <div class="node-desc">
+                Thousands of messy clinical notes, unorganized documents, and legacy CSV spreadsheets enter our system.
+            </div>
+            <div class="demo-card" style="color: #94a3b8;">"We hv some beds. Dr comes sometimes on Tue. Oxygen is broken."</div>
+        </div>
+
+        <div class="connector-wrapper">
+            <div class="connector-line"><div class="connector-dot"></div></div>
+        </div>
+
+        <!-- Node 2: Extractor Agent -->
+        <div class="node ai">
+            <div class="port in"></div>
+            <div class="port out"></div>
+            <div class="node-header">
+                <div class="icon">🧠</div>
+                <div class="node-title">2. Llama 3.3 Extractor</div>
+            </div>
+            <div class="node-desc">
+                Our primary Databricks AI reads the messy notes exactly like a human, extracts the facts, and perfectly organizes them.
+            </div>
+            <div class="demo-card">{"has_beds": true, "has_oxygen": false, "full_time_staff": false}</div>
+        </div>
+
+        <div class="connector-wrapper">
+            <div class="connector-line"><div class="connector-dot"></div></div>
+        </div>
+
+        <!-- Node 3: Validator Agent -->
+        <div class="node ai">
+            <div class="port in"></div>
+            <div class="port out"></div>
+            <div class="node-header">
+                <div class="icon">⚕️</div>
+                <div class="node-title">3. Medical Auditor</div>
+            </div>
+            <div class="node-desc">
+                A secondary AI acts as a strict Doctor. It double-checks the first AI's work to catch dangerous medical paradoxes and lies.
+            </div>
+            <div class="demo-card error">⚠️ CONTRADICTION: Facility claims ICU but has broken oxygen!</div>
+        </div>
+
+        <div class="connector-wrapper">
+            <div class="connector-line"><div class="connector-dot"></div></div>
+        </div>
+
+        <!-- Node 4: Trust Engine -->
+        <div class="node logic">
+            <div class="port in"></div>
+            <div class="port out"></div>
+            <div class="node-header">
+                <div class="icon">⚖️</div>
+                <div class="node-title">4. Bayesian Math</div>
+            </div>
+            <div class="node-desc">
+                Strict mathematics calculate a 0-100% "Trust Score" & "Confidence Rating" so humans know who is actually safe.
+            </div>
+            <div class="demo-card warning" style="color: #f59e0b;">Trust Score: 32% (LOW)<br>Confidence Base: 41%</div>
+        </div>
+
+        <div class="connector-wrapper">
+            <div class="connector-line"><div class="connector-dot"></div></div>
+        </div>
+
+        <!-- Node 5: Output UI -->
+        <div class="node action">
+            <div class="port in"></div>
+            <div class="node-header">
+                <div class="icon">🌍</div>
+                <div class="node-title">5. Crisis Mapping</div>
+            </div>
+            <div class="node-desc">
+                The highly verified data drops instantly onto the glowing map interface, allowing NGO Planners to quickly route resources.
+            </div>
+            <div class="demo-card info">✓ Node Indexed<br>✓ Color: Red (High Risk)<br>✓ Verified by AI</div>
+        </div>
+
+    </div>
+
+    <div class="footer">
+        Powered by Databricks Meta Llama 3.3. Designed for completely transparent, hallucination-free routing.
+    </div>
+
+</body>
+</html>

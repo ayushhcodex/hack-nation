@@ -70,9 +70,36 @@ def query_facilities(payload: QueryRequest) -> dict:
     # Build chain of thought trace
     chain_of_thought = _build_query_trace(facilities, payload, result)
     
+    formatted_results = []
+    for _, row in result.iterrows():
+        try:
+            evidence = json.loads(row.get("extraction_evidence", "[]"))
+        except (json.JSONDecodeError, TypeError):
+            evidence = []
+            
+        try:
+            uncertainty_flags = json.loads(row.get("uncertainty_flags", "[]"))
+        except (json.JSONDecodeError, TypeError):
+            uncertainty_flags = []
+            
+        formatted_results.append({
+            "name": str(row.get("name", "Unknown")),
+            "hospital": str(row.get("name", "Unknown")),
+            "facility_id": str(row.get("facility_id", "")),
+            "address_city": str(row.get("address_city", "Unknown")),
+            "address_stateOrRegion": str(row.get("address_stateOrRegion", "Unknown")),
+            "trust_score": float(row.get("trust_score", 0.0)),
+            "trust_band": str(row.get("trust_band", "low")),
+            "matched_capabilities": str(row.get("matched_capabilities", "")),
+            "confidence": float(row.get("confidence", 0.0)),
+            "uncertainty_flags": uncertainty_flags,
+            "evidence": evidence,
+            "contradiction_flags": json.dumps(uncertainty_flags)
+        })
+    
     return {
-        "count": len(result),
-        "results": json.loads(result.to_json(orient="records", default_handler=str)),
+        "count": len(formatted_results),
+        "results": formatted_results,
         "chain_of_thought": chain_of_thought,
     }
 

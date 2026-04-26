@@ -163,6 +163,56 @@ def _check_contradiction(row: pd.Series, rule: dict) -> str | None:
     return None
 
 
+def compute_confidence(extracted_record: dict, contradictions: list[str], evidence: dict) -> dict:
+    uncertainty_flags = []
+    confidence_reason = []
+
+    evidence_count = 0
+    for key, ev_list in evidence.items():
+        if isinstance(ev_list, list):
+            evidence_count += len(ev_list)
+        elif isinstance(ev_list, dict) and "evidence" in ev_list:
+            evidence_count += len(ev_list["evidence"])
+            
+    evidence_score = _clamp(evidence_count / 5.0)
+    if evidence_count <= 1:
+        uncertainty_flags.append("Sparse supporting evidence")
+    confidence_reason.append(f"Evidence score: {evidence_score:.2f} ({evidence_count} sentences found)")
+
+    contradiction_count = len(contradictions)
+    contradiction_penalty = _clamp(contradiction_count / 3.0)
+    for c in contradictions:
+        uncertainty_flags.append(f"Conflicting capability: {c}")
+    confidence_reason.append(f"Contradiction penalty: {contradiction_penalty:.2f} ({contradiction_count} contradictions)")
+
+    critical_fields = ["has_icu", "has_ventilator", "has_anesthesiologist", "has_emergency_surgery"]
+    fields_present = 0
+    for field in critical_fields:
+        is_true = bool(extracted_record.get(field, False))
+        has_ev = len(evidence.get(field, [])) > 0 if isinstance(evidence, dict) else False
+        
+        if is_true or has_ev:
+            fields_present += 1
+        else:
+            if field == "has_anesthesiologist":
+                uncertainty_flags.append("Missing anesthesiologist data")
+            elif field == "has_icu":
+                uncertainty_flags.append("Weak ICU evidence")
+            elif field == "has_emergency_surgery":
+                uncertainty_flags.append("Missing surgery capability data")
+
+    completeness_score = fields_present / len(critical_fields) if critical_fields else 0.0
+    confidence_reason.append(f"Completeness score: {completeness_score:.2f}")
+
+    confidence = round((0.4 * evidence_score) + (0.3 * (1.0 - contradiction_penalty)) + (0.3 * completeness_score), 4)
+
+    return {
+        "confidence": confidence,
+        "uncertainty_flags": uncertainty_flags,
+        "confidence_reason": confidence_reason
+    }
+
+
 def score_trust(df: pd.DataFrame) -> pd.DataFrame:
     """Score trust for each facility using enhanced multi-signal approach."""
     outputs = []
@@ -252,6 +302,10 @@ def score_trust(df: pd.DataFrame) -> pd.DataFrame:
         trust_score = alpha / (alpha + beta)
         conf_low, conf_high = _confidence_interval(trust_score, alpha + beta)
 
+        # Compute uncertainty confidence layer
+        extracted_record = row.to_dict()
+        conf_result = compute_confidence(extracted_record, contradiction_flags, evidence)
+
         trust_band = (
             "high" if trust_score >= 0.75
             else "medium" if trust_score >= 0.5
@@ -261,6 +315,9 @@ def score_trust(df: pd.DataFrame) -> pd.DataFrame:
         outputs.append({
             "trust_score": round(trust_score, 4),
             "trust_band": trust_band,
+            "confidence": conf_result["confidence"],
+            "uncertainty_flags": json.dumps(conf_result["uncertainty_flags"], ensure_ascii=False),
+            "confidence_reason": json.dumps(conf_result["confidence_reason"], ensure_ascii=False),
             "confidence_low": round(conf_low, 4),
             "confidence_high": round(conf_high, 4),
             "contradiction_flags": json.dumps(contradiction_flags, ensure_ascii=False),

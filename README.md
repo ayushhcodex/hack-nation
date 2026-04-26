@@ -1,129 +1,64 @@
-# Agentic Healthcare Intelligence System (India)
+<div align="center">
 
-This project builds an end-to-end reasoning layer for healthcare discovery across 10k+ Indian facility records with null-heavy, unstructured text.
+# HealthIntel India 🏥 
+### Agentic Healthcare Intelligence mapped for 1.4 Billion Lives
 
-## What You Get
+*A Databricks for Good Hackathon Project*
 
-- Massive unstructured extraction from free text fields (`description`, `specialties`, `procedure`, `equipment`, `capability`)
-- Multi-attribute reasoning query engine (not just keyword matching)
-- Trust Scorer with contradiction checks and confidence intervals
-- Validator agent against baseline medical logic rules
-- Medical desert detection by state and PIN code
-- Row-level citation snippets for explainability
-- Trace logs for each pipeline stage (MLflow-ready integration path)
-- MLflow-backed observability spans and run metrics with estimated trace cost
-- Mosaic AI Vector Search sync and semantic retrieval module
-- Genie-style autonomous multi-step task orchestrator
-- FastAPI service for query and desert endpoints
-- Streamlit dashboard for planner/NGO usage
-- Databricks notebook for Free Edition execution
+</div>
 
-## Repository Layout
+## 📖 Overview
+HealthIntel India is a fully autonomous, Multi-Agent AI System designed to parse, synthesize, and map the medical capabilities of over 10,000 Indian healthcare facilities. Built for the *"Serving a Nation"* problem statement, this system abandons rigid logic and simple SQL in favor of **Agentic Engineering**. It intelligently identifies critical Medical Deserts and produces verifiable Chain-of-Thought trust metrics for NGO health planners.
 
-- `src/healthcare_intel/io/data_loader.py`: CSV ingestion and null-safe normalization
-- `src/healthcare_intel/agents/extractor_agent.py`: capability extraction from unstructured text
-- `src/healthcare_intel/validation/trust_scorer.py`: trust score + contradictions + confidence bounds
-- `src/healthcare_intel/validation/validator_agent.py`: standards cross-check
-- `src/healthcare_intel/reasoning/query_engine.py`: multi-attribute query parser and ranking
-- `src/healthcare_intel/reasoning/vector_search.py`: Mosaic AI Vector Search sync and retrieval
-- `src/healthcare_intel/analytics/desert_detection.py`: specialized desert detection
-- `src/healthcare_intel/pipeline.py`: full orchestration and artifact output
-- `src/healthcare_intel/observability.py`: MLflow tracing + cost estimate metrics
-- `src/healthcare_intel/agents/genie_orchestrator.py`: autonomous multi-step execution engine
-- `src/healthcare_intel/api.py`: API endpoints
-- `src/healthcare_intel/dashboard_app.py`: dashboard UI
-- `notebooks/01_databricks_end_to_end.ipynb`: Databricks-ready notebook
+## 🚀 The Tech Stack
+- **Core Intelligence Engine:** Databricks Foundation Model APIs (Specifically `Meta Llama 3.3 70B Instruct`).
+- **Semantic Retrieval:** Mosaic AI Vector Search.
+- **Backend Server:** Python, FastAPI, Uvicorn, Pandas.
+- **Frontend Dashboard:** Vanilla HTML5, CSS3 (Glassmorphism UI), JavaScript (ES6), Leaflet.js (MarkerCluster).
 
-## Dataset
+---
 
-Put your CSV in `data/` (or any path) with your provided columns, including null values.
+## 🛠️ The Architecture & Contributions
 
-Example filename:
+Over the course of development, this application was rapidly evolved from a static deterministic parser into a living **Agentic Neuro-Symbolic System** across 4 major milestones:
 
-- `data/VF_Hackathon_Dataset_India_Large.csv`
+### 1. Unstructured Data Extraction Agent (`multi_pass_extractor.py`)
+Real-world hospital data is terribly messy. Initially, this application used a simple Regex scanner (e.g., looking for the word "ICU"). 
+- **The Upgrade:** The extraction core was replaced with a Databricks Llama 3.3 Agent. It dynamically reads free-form clinical notes and mathematically infers missing capabilities. 
+- **Verbatim Anchoring:** To prevent medical hallucinations, the Agent forces every single extracted capability to be anchored to an exact sub-string citation.
 
-## Quickstart
+### 2. Multi-Attribute LLM Query Planner (`query_engine.py`)
+Standard systems use rigid dictionary filters to search for facilities. 
+- **The Upgrade:** A Natural Language Query Planner. When a user asks *"Find rural clinics near Bihar with part-time dentists"*, the LLM planner digests the constraints, formats them into a strict search schema, and pipes the semantic logic into the Databricks Vector Search DB.
 
-### 1) Install
+### 3. Autonomous Genie Orchestrator (`genie_orchestrator.py`)
+Instead of developers writing manual Python files to execute code, the Pipeline operates completely autonomously.
+- **Detailed Orchestration Engine:** The `chat_and_execute(prompt: str)` function acts as a LangChain-style router. The system feeds the Databricks model live schemas for internal Python tools (like `sync_vector_index` or `build_knowledge_base`). The LLM understands the prompt intent, selects the exact mathematical sequence of python functions to call, and executes the data pipeline dynamically. 
+- **Self-Healing:** If an API step fails in the multi-tool chain, the orchestrator interrupts the data loop and reports exactly which payload failed.
 
-```bash
-pip install -r requirements.txt
-pip install -e .
+### 4. LLM Validator Agent & Dynamic Mapping  (`validator_agent.py` & `app.js`)
+Medical data is full of errors, so we instituted a stringent "Self-Correction Loop".
+- **Metadata Context Injection:** An LLM Medical Auditor reads the claims a hospital makes alongside its **Metadata** (e.g., checking if a "Primary Care Clinic" is claiming to have "Advanced Neurosurgery"). If it spots a logical paradox, it flags the facility with a Trust Score penalty.
+- **Dynamic Crisis Mapping UI:** The frontend map was overhauled with `Leaflet.markercluster`. Thousands of Databricks facility nodes are dynamically clustered into glowing heatmap nodes that scale intelligently across the map of India at 60 FPS without crashing the browser.
+
+---
+
+## 💻 Running the Application Locally
+
+The application acts securely as a local bridge to the Databricks Cloud. You will gracefully bypass CORS limits by having your Python Backend trigger the AI.
+
+1. **Configure Environment:** Ensure your `.env` contains your Databricks API keys.
+```env
+DATABRICKS_HOST="https://dbc-YOUR-WORKSPACE.cloud.databricks.com/"
+DATABRICKS_TOKEN="dapi..."
+LLM_ENDPOINT_NAME="databricks-meta-llama-3-3-70b-instruct"
 ```
 
-### 2) Run pipeline
-
+2. **Start the API & Web Server:**
 ```bash
-python scripts/run_pipeline.py --dataset data/VF_Hackathon_Dataset_India_Large.csv --output outputs
+export PYTHONPATH=src
+python3 -m uvicorn healthcare_intel.api:app --reload --port 8000
 ```
 
-To disable MLflow instrumentation:
-
-```bash
-python scripts/run_pipeline.py --dataset data/VF_Hackathon_Dataset_India_Large.csv --output outputs --disable-mlflow
-```
-
-To sync to Mosaic AI Vector Search while running:
-
-```bash
-python scripts/run_pipeline.py --dataset data/VF_Hackathon_Dataset_India_Large.csv --output outputs --vector-endpoint <endpoint_name> --vector-index <catalog.schema.index_name>
-```
-
-### 3) Launch API
-
-```bash
-uvicorn healthcare_intel.api:app --reload
-```
-
-### 4) Launch dashboard
-
-```bash
-streamlit run src/healthcare_intel/dashboard_app.py
-```
-
-### 5) Run Genie-style autonomous task
-
-```bash
-python scripts/run_genie_task.py --action build_knowledge_base --params "{\"dataset_path\": \"data/VF_Hackathon_Dataset_India_Large.csv\", \"output_dir\": \"outputs\", \"enable_mlflow\": true}"
-```
-
-## Output Artifacts
-
-- `outputs/facilities_enriched.parquet`
-- `outputs/facilities_enriched.csv`
-- `outputs/specialized_deserts.parquet`
-- `outputs/specialized_deserts.csv`
-- `outputs/pipeline_trace.jsonl`
-
-## Trust Scoring Summary
-
-Score blends:
-
-- positive evidence support,
-- contradiction penalties,
-- missing critical fields,
-- confidence interval around estimated reliability.
-
-Example contradiction:
-
-- Emergency surgery claim without anesthesiologist evidence.
-
-## Sample Query
-
-"Find the nearest facility in rural Bihar that can perform an emergency appendectomy and typically leverages parttime doctors"
-
-Use API `/query` with optional `latitude` and `longitude` to rank by trust + distance.
-
-## Databricks Notes
-
-- Use serverless compute in Databricks Free Edition.
-- Upload CSV to DBFS/Unity Catalog Volume.
-- Open notebook `notebooks/01_databricks_end_to_end.ipynb` and execute cells.
-- Use `src/healthcare_intel/reasoning/vector_search.py` or CLI flags to sync outputs to Mosaic AI Vector Search.
-
-## Stretch Extension Hooks
-
-- Add LLM extraction with Databricks Model Serving endpoint in extractor stage.
-- Log step spans to MLflow Tracing for every recommendation path.
-- Add self-correction loops by re-scoring low-confidence rows with validator prompts.
-- Build PIN-level India choropleth from `specialized_deserts.csv`.
+3. **Explore HealthIntel:**
+Navigate to `http://127.0.0.1:8000/` to test the Discovery search engine and visualize the Medical Deserts Map in real-time.
