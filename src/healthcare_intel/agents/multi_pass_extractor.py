@@ -18,6 +18,7 @@ import pandas as pd
 import yaml
 
 from healthcare_intel.utils import contains_any, split_sentences
+import mlflow
 from healthcare_intel.config import settings
 
 CONFIG_PATH = Path(__file__).resolve().parents[3] / "configs" / "indian_medical_terms.yaml"
@@ -103,6 +104,7 @@ def _pass1_structured(row: pd.Series) -> dict[str, dict]:
     return results
 
 
+@mlflow.trace(name="llm_extract", span_type="LLM")
 def _llm_extract_capabilities(text: str) -> dict:
     if not text.strip():
         raise ValueError("Empty text")
@@ -337,6 +339,7 @@ def _pass3_cross_validate(
     return merged
 
 
+@mlflow.trace(name="multi_pass_extractor", span_type="AGENT")
 def extract_capabilities(df: pd.DataFrame) -> pd.DataFrame:
     """Run 3-pass extraction on all facility rows."""
     rows: list[dict[str, Any]] = []

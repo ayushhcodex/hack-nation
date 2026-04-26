@@ -9,6 +9,7 @@ from typing import Any
 
 import pandas as pd
 
+import mlflow
 from healthcare_intel.config import settings
 from healthcare_intel.pipeline import run_pipeline
 from healthcare_intel.reasoning.query_engine import run_query
@@ -28,6 +29,7 @@ class GenieOrchestrator:
     Genie-style autonomous orchestrator for multi-step healthcare intelligence tasks.
     """
 
+    @mlflow.trace(name="genie_orchestrator", span_type="AGENT")
     def chat_and_execute(self, prompt: str) -> list[dict[str, Any]]:
         """
         Dynamically plan and execute a sequence of tasks based on a natural language prompt.

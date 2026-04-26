@@ -5,6 +5,7 @@ import re
 import urllib.request
 import pandas as pd
 
+import mlflow
 from healthcare_intel.config import settings
 
 MEDICAL_STANDARDS = {
@@ -14,6 +15,7 @@ MEDICAL_STANDARDS = {
 }
 
 
+@mlflow.trace(name="llm_validate", span_type="LLM")
 def _llm_validate_capabilities(capabilities: dict, metadata: dict) -> list[str]:
     if (
         not settings.databricks_host
@@ -60,6 +62,7 @@ Respond with STRICT JSON format:
         raise ValueError(f"LLM validation failed: {e}")
 
 
+@mlflow.trace(name="validator_agent", span_type="AGENT")
 def validate_against_standards(df: pd.DataFrame) -> pd.DataFrame:
     issues = []
 

@@ -10,6 +10,7 @@ import pandas as pd
 from healthcare_intel.observability import ObservabilityTracker, estimate_trace_cost
 from healthcare_intel.utils import haversine_km
 from healthcare_intel.config import settings
+import mlflow
 from healthcare_intel.reasoning.vector_search import semantic_search
 
 QUERY_TO_CAPABILITY = {
@@ -68,6 +69,7 @@ def _parse_query_fallback(query: str, known_states: list[str]) -> ParsedQuery:
     )
 
 
+@mlflow.trace(name="llm_parse_query", span_type="LLM")
 def _llm_parse_query(query: str, known_states: list[str]) -> tuple[ParsedQuery | None, str]:
     if "api.databricks.com" in settings.databricks_host or "云" in settings.databricks_host or not settings.databricks_token or settings.databricks_host == "https://dbc-xxxxxxx.cloud.databricks.com":
         return None, "Databricks LLM credentials missing. Provide DATABRICKS_HOST."
@@ -174,6 +176,7 @@ def parse_query(query: str, known_states: list[str], trace_steps: list) -> Parse
     return fallback_res
 
 
+@mlflow.trace(name="query_planner", span_type="AGENT")
 def run_query(
     facilities: pd.DataFrame,
     query: str,

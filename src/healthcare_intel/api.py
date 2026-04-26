@@ -13,6 +13,13 @@ from fastapi.responses import FileResponse
 
 from healthcare_intel.reasoning.query_engine import run_query
 from healthcare_intel.schemas import QueryRequest
+from healthcare_intel.config import settings
+import mlflow
+
+# Route all traces for the API requests to the correct Hackathon experiment
+if settings.mlflow_tracking_uri:
+    mlflow.set_tracking_uri(settings.mlflow_tracking_uri)
+mlflow.set_experiment(settings.mlflow_experiment_name)
 
 app = FastAPI(title="HealthIntel India — Agentic Healthcare Intelligence", version="1.0.0")
 
