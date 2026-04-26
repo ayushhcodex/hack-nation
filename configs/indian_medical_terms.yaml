@@ -1,0 +1,145 @@
+# Indian Medical Terminology Engine
+# Covers Indian-specific medical vocabulary, abbreviations, facility types
+
+capability_terms:
+  # Critical Infrastructure
+  has_icu: ["icu", "intensive care", "critical care", "intensive care unit"]
+  has_oxygen: ["oxygen", "o2", "oxygen plant", "oxygen cylinder", "oxygen supply", "oxygen concentrator"]
+  has_ventilator: ["ventilator", "mechanical ventilation", "breathing machine", "ventilatory support"]
+  has_ot: ["operation theatre", "operating room", "OT facilities", "surgical suite", "OT "]
+  has_blood_bank: ["blood bank", "blood storage", "blood transfusion", "blood donation"]
+
+  # Emergency & Trauma
+  has_trauma: ["trauma", "accident and emergency", "emergency medicine", "trauma center", "emergency department"]
+  has_emergency_surgery: ["emergency surgery", "urgent surgery", "general surgery", "surgical emergency"]
+  has_ambulance: ["ambulance", "patient transport", "108", "emergency vehicle"]
+
+  # Surgical
+  has_appendectomy: ["appendectomy", "appendicectomy"]
+  has_anesthesiologist: ["anesthesiologist", "anaesthesiologist", "anesthesia specialist", "anesthesia machine", "anaesthesia"]
+  has_general_surgery: ["general surgery", "generalSurgery", "surgeon"]
+
+  # Specialty - High Acuity
+  has_oncology: ["oncology", "cancer care", "radiotherapy", "chemotherapy", "cancer treatment", "cancer hospital", "oncologist"]
+  has_dialysis: ["dialysis", "hemodialysis", "nephrology dialysis", "kidney dialysis", "renal dialysis"]
+  has_neonatal: ["nicu", "neonatal", "newborn intensive", "neonatology", "neonatal care"]
+  has_cardiology: ["cardiology", "cardiac", "heart", "cardiologist", "cardiac surgery", "cath lab"]
+  has_neurology: ["neurology", "neurosurgery", "neurologist", "brain surgery", "neuro"]
+  has_orthopedic: ["orthopedic", "orthopaedic", "bone", "joint replacement", "fracture", "orthopedicSurgery"]
+
+  # Diagnostics
+  has_lab: ["pathology", "laboratory", "lab", "diagnostic center", "blood test", "diagnostics", "clinicalPathology"]
+  has_xray: ["x-ray", "xray", "radiography", "radiology", "x ray"]
+  has_ultrasound: ["ultrasound", "sonography", "USG", "ultrasonography"]
+  has_ct_scan: ["CT scan", "CAT scan", "computed tomography", "ct scan"]
+  has_mri: ["MRI", "magnetic resonance", "mri scan"]
+  has_ecg: ["ECG", "EKG", "electrocardiogram", "echocardiography"]
+
+  # Maternal & Child
+  has_maternity: ["maternity", "obstetrics", "delivery", "labour room", "labor room", "gynecologyAndObstetrics"]
+  has_pediatric: ["pediatric", "paediatric", "child specialist", "children", "pediatrics"]
+
+  # Dental & Eye
+  has_dental: ["dental", "dentist", "orthodontic", "dentistry", "endodontics", "root canal", "RCT"]
+  has_eye_care: ["ophthalmology", "eye", "cataract", "optometry", "ophthalmologist", "lasik"]
+
+  # Availability
+  has_24x7: ["24/7", "24x7", "round the clock", "day and night", "24 hours", "24-hour"]
+  uses_parttime_doctors: ["part-time", "part time", "visiting consultant", "locum", "visiting doctor"]
+  has_opd: ["OPD", "outpatient", "out-patient", "outpatient department"]
+  has_ipd: ["IPD", "inpatient", "in-patient", "inpatient department", "admission"]
+
+  # Insurance & Payment
+  has_cashless: ["cashless", "cashless insurance", "empanelled", "insurance accepted", "TPA"]
+
+  # Indian-specific Facility Classification
+  is_phc: ["PHC", "primary health centre", "primary health center", "primary healthcare"]
+  is_chc: ["CHC", "community health centre", "community health center"]
+  is_district_hospital: ["district hospital", "civil hospital"]
+  is_government: ["government", "govt", "sarkari", "public hospital", "public"]
+  is_ayush: ["ayurvedic", "ayurveda", "homeopathy", "homoeopathy", "unani", "siddha", "naturopathy", "AYUSH"]
+
+  # Staffing Indicators (from text)
+  staffing_mbbs: ["MBBS", "medical officer", "MO", "general physician", "general practitioner"]
+  staffing_specialist: ["MD", "MS", "specialist", "super-specialist", "DM", "MCh", "DNB"]
+  staffing_nurse: ["nurse", "nursing staff", "ANM", "GNM", "BSc nursing"]
+
+# Derived capabilities (computed from combinations)
+derived_capabilities:
+  has_functional_icu:
+    requires_all: ["has_icu", "has_oxygen"]
+    description: "ICU with confirmed oxygen support"
+  has_surgical_capability:
+    requires_all: ["has_ot", "has_anesthesiologist"]
+    description: "Operation theatre with anesthesia support"
+  has_emergency_ready:
+    requires_any: ["has_trauma", "has_emergency_surgery"]
+    requires_all: ["has_24x7"]
+    description: "24/7 emergency-capable facility"
+
+# Contradiction rules for trust scoring
+trust_contradiction_rules:
+  - id: surgery_without_anesthesia
+    when: ["has_emergency_surgery", "has_appendectomy", "has_general_surgery"]
+    requires: ["has_anesthesiologist"]
+    severity: high
+    message: "Claims surgical capability but no anesthesiologist evidence"
+
+  - id: icu_without_oxygen
+    when: ["has_icu"]
+    requires: ["has_oxygen"]
+    severity: high
+    message: "ICU claimed but oxygen support not evidenced"
+
+  - id: always_open_without_doctors
+    when: ["has_24x7"]
+    requires: ["numberDoctors>0"]
+    severity: medium
+    message: "24/7 claim with no doctor count available"
+
+  - id: neonatal_without_pediatrics
+    when: ["has_neonatal"]
+    requires: ["has_pediatric"]
+    severity: high
+    message: "Neonatal care but no pediatric specialist evidenced"
+
+  - id: emergency_without_ambulance
+    when: ["has_emergency_surgery"]
+    requires: ["has_ambulance", "has_trauma"]
+    requires_mode: any
+    severity: medium
+    message: "Emergency surgery claimed without ambulance or trauma setup"
+
+  - id: hospital_no_equipment
+    when: ["is_hospital"]
+    requires: ["has_basic_equipment"]
+    severity: medium
+    message: "Hospital type but no equipment listed"
+
+  - id: specialist_in_pharmacy
+    when: ["has_oncology", "has_dialysis", "has_icu"]
+    requires: ["is_not_pharmacy"]
+    requires_mode: context
+    severity: high
+    message: "Specialist capability claimed by pharmacy/dentist facility"
+
+  - id: blood_bank_without_lab
+    when: ["has_blood_bank"]
+    requires: ["has_lab"]
+    severity: medium
+    message: "Blood bank without laboratory support"
+
+# Facility tier classification
+facility_tiers:
+  tier_1:
+    types: ["hospital"]
+    label: "Hospital"
+    min_expected_capabilities: 3
+  tier_2:
+    types: ["clinic"]
+    label: "Clinic"
+    min_expected_capabilities: 1
+  tier_3:
+    types: ["dentist", "doctor", "pharmacy", "farmacy"]
+    label: "Specialized/Pharmacy"
+    min_expected_capabilities: 0

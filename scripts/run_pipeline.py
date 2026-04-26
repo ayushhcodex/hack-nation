@@ -9,7 +9,7 @@ from healthcare_intel.reasoning.vector_search import VectorSearchConfig, sync_in
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run Agentic Healthcare Intelligence pipeline")
-    parser.add_argument("--dataset", required=True, help="Path to input CSV")
+    parser.add_argument("--dataset", required=True, help="Path to input CSV or XLSX")
     parser.add_argument("--output", default="outputs", help="Output directory")
     parser.add_argument(
         "--disable-mlflow",

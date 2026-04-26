@@ -6,7 +6,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterator
 
-import mlflow
+try:
+    import mlflow
+except ImportError:
+    mlflow = None  # type: ignore
 
 from healthcare_intel.config import settings
 
@@ -22,7 +25,7 @@ class _NoopSpan:
         return None
 
 
-@dataclass(slots=True)
+@dataclass
 class ObservabilityTracker:
     """MLflow-backed tracking for run-level and step-level observability."""
 
@@ -30,7 +33,7 @@ class ObservabilityTracker:
     enabled: bool = True
 
     def setup(self) -> None:
-        if not self.enabled:
+        if not self.enabled or mlflow is None:
             return
         if settings.mlflow_tracking_uri:
             mlflow.set_tracking_uri(settings.mlflow_tracking_uri)

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HealthIntel India — Agentic Healthcare Intelligence for 1.4 Billion Lives</title>
+    <meta name="description" content="AI-powered healthcare facility discovery, trust scoring, and medical desert mapping across 10,000+ Indian medical facilities.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" />
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar" id="navbar">
+        <div class="nav-brand">
+            <span class="nav-icon">🏥</span>
+            <span class="nav-title">HealthIntel <span class="accent">India</span></span>
+            <span class="nav-subtitle">Agentic Healthcare Intelligence</span>
+        </div>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="discover" id="tab-discover">
+                <span class="tab-icon">🔍</span> Discover
+            </button>
+            <button class="nav-tab" data-tab="deserts" id="tab-deserts">
+                <span class="tab-icon">🗺️</span> Desert Map
+            </button>
+            <button class="nav-tab" data-tab="audit" id="tab-audit">
+                <span class="tab-icon">🛡️</span> Trust Audit
+            </button>
+            <button class="nav-tab" data-tab="insights" id="tab-insights">
+                <span class="tab-icon">📊</span> Insights
+            </button>
+        </div>
+    </nav>
+
+    <!-- Stats Bar -->
+    <div class="stats-bar" id="stats-bar">
+        <div class="stat-item">
+            <span class="stat-value" id="stat-total">—</span>
+            <span class="stat-label">Facilities Analyzed</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="stat-trust">—</span>
+            <span class="stat-label">Avg Trust Score</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="stat-deserts">—</span>
+            <span class="stat-label">Desert Regions</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-value" id="stat-contradictions">—</span>
+            <span class="stat-label">Contradictions Found</span>
+        </div>
+    </div>
+
+    <!-- Section: DISCOVER -->
+    <section class="tab-content active" id="section-discover">
+        <div class="discover-hero">
+            <h1 class="hero-title">Ask the Intelligence Layer</h1>
+            <p class="hero-subtitle">Natural language queries across 10,000+ Indian medical facilities with trust-aware ranking</p>
+            
+            <div class="search-container">
+                <div class="search-box">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="query-input" class="search-input"
+                        placeholder="Find nearest facility in rural Bihar for emergency appendectomy with part-time doctors..."
+                        value="Find nearest facility in rural Bihar for emergency appendectomy with parttime doctors">
+                    <button class="search-btn" id="search-btn">
+                        <span>Search</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </div>
+                <div class="capability-toggles" id="capability-toggles">
+                    <button class="cap-toggle" data-cap="has_icu">ICU</button>
+                    <button class="cap-toggle" data-cap="has_trauma">Trauma</button>
+                    <button class="cap-toggle" data-cap="has_dialysis">Dialysis</button>
+                    <button class="cap-toggle" data-cap="has_oncology">Oncology</button>
+                    <button class="cap-toggle" data-cap="has_emergency_surgery">Surgery</button>
+                    <button class="cap-toggle" data-cap="has_neonatal">Neonatal</button>
+                    <button class="cap-toggle" data-cap="has_24x7">24/7</button>
+                    <button class="cap-toggle" data-cap="has_ventilator">Ventilator</button>
+                    <button class="cap-toggle" data-cap="has_ambulance">Ambulance</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="discover-results" id="discover-results" style="display: none;">
+            <div class="results-grid">
+                <div class="results-col">
+                    <h2 class="section-title">Recommended Facilities</h2>
+                    <div id="facility-results"></div>
+                </div>
+                <div class="trace-col">
+                    <h2 class="section-title">🧠 Agent Chain of Thought</h2>
+                    <div id="chain-of-thought" class="cot-container"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: DESERT MAP -->
+    <section class="tab-content" id="section-deserts">
+        <div class="map-container">
+            <div id="india-map" class="india-map"></div>
+            <div class="map-sidebar" id="map-sidebar">
+                <h2 class="section-title">🔴 Critical Medical Deserts</h2>
+                <p class="sidebar-desc">Regions with critical healthcare gaps</p>
+                <div id="desert-list" class="desert-list"></div>
+                <div id="recommendations-panel" class="recommendations-panel" style="display:none;">
+                    <h3 class="rec-title">📋 Deployment Recommendations</h3>
+                    <div id="recommendations-list"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: TRUST AUDIT -->
+    <section class="tab-content" id="section-audit">
+        <div class="audit-container">
+            <div class="audit-header">
+                <h2 class="section-title">🛡️ Trust Audit Dashboard</h2>
+                <div class="audit-filters">
+                    <select id="audit-state-filter" class="filter-select">
+                        <option value="">All States</option>
+                    </select>
+                    <select id="audit-trust-filter" class="filter-select">
+                        <option value="">All Trust Bands</option>
+                        <option value="high">✅ High Trust</option>
+                        <option value="medium">⚠️ Medium Trust</option>
+                        <option value="low">🔴 Low Trust</option>
+                    </select>
+                    <select id="audit-type-filter" class="filter-select">
+                        <option value="">All Types</option>
+                        <option value="hospital">Hospital</option>
+                        <option value="clinic">Clinic</option>
+                        <option value="dentist">Dentist</option>
+                    </select>
+                </div>
+            </div>
+            <div class="audit-grid">
+                <div class="audit-main">
+                    <div class="red-flag-banner" id="red-flag-banner">
+                        <h3>🚨 Red Flag Feed</h3>
+                        <div id="red-flag-list"></div>
+                    </div>
+                    <table class="audit-table" id="audit-table">
+                        <thead>
+                            <tr>
+                                <th>Facility</th>
+                                <th>Location</th>
+                                <th>Type</th>
+                                <th>Trust</th>
+                                <th>Issues</th>
+                                <th>Capabilities</th>
+                            </tr>
+                        </thead>
+                        <tbody id="audit-table-body"></tbody>
+                    </table>
+                    <div class="pagination" id="audit-pagination"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Section: INSIGHTS -->
+    <section class="tab-content" id="section-insights">
+        <div class="insights-container">
+            <h2 class="section-title">📊 National Healthcare Intelligence</h2>
+            <div class="insights-grid">
+                <div class="insight-card" id="card-trust-dist">
+                    <h3>Trust Score Distribution</h3>
+                    <div class="chart-container" id="chart-trust"></div>
+                </div>
+                <div class="insight-card" id="card-capability">
+                    <h3>Capability Coverage (Top 15)</h3>
+                    <div class="chart-container" id="chart-capabilities"></div>
+                </div>
+                <div class="insight-card" id="card-facility-types">
+                    <h3>Facility Types</h3>
+                    <div class="chart-container" id="chart-types"></div>
+                </div>
+                <div class="insight-card" id="card-state-coverage">
+                    <h3>State-wise Facility Count</h3>
+                    <div class="chart-container" id="chart-states"></div>
+                </div>
+                <div class="insight-card full-width" id="card-desert-risk">
+                    <h3>Desert Risk Tiers</h3>
+                    <div class="chart-container" id="chart-desert-risk"></div>
+                </div>
+                <div class="insight-card full-width" id="card-key-findings">
+                    <h3>🔑 Key Findings</h3>
+                    <div id="key-findings"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Facility Detail Modal -->
+    <div class="modal-overlay" id="facility-modal" style="display:none;">
+        <div class="modal-content">
+            <button class="modal-close" id="modal-close">✕</button>
+            <div id="modal-body"></div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>HealthIntel India — Agentic Healthcare Intelligence System | Powered by Databricks Data Intelligence Platform</p>
+        <p class="footer-sub">Built for Serving A Nation Hackathon • 10,000+ facilities • Multi-agent trust verification</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>

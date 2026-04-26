@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 
-@dataclass(slots=True)
+@dataclass
 class TraceCollector:
     """Collects row-level and pipeline-level trace steps."""
 

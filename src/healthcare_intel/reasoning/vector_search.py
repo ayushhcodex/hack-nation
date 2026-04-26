@@ -1,15 +1,19 @@
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 
 import pandas as pd
+from healthcare_intel.config import settings
+
+logger = logging.getLogger(__name__)
 
 
-@dataclass(slots=True)
+@dataclass
 class VectorSearchConfig:
-    endpoint_name: str
-    index_name: str
+    endpoint_name: str = settings.vector_search_endpoint
+    index_name: str = settings.vector_search_index
     primary_key: str = "facility_id"
     text_column: str = "full_text"
 
@@ -17,12 +21,10 @@ class VectorSearchConfig:
 def _get_client() -> Any:
     try:
         from databricks.vector_search.client import VectorSearchClient
+        return VectorSearchClient()
     except Exception as exc:  # pragma: no cover
-        raise ImportError(
-            "databricks-vectorsearch is required for Mosaic AI Vector Search integration"
-        ) from exc
-
-    return VectorSearchClient()
+        logger.warning(f"Vector search client unavailable: {exc}")
+        return None
 
 
 def _prepare_for_index(df: pd.DataFrame, primary_key: str, text_column: str) -> pd.DataFrame:
@@ -39,32 +41,46 @@ def _prepare_for_index(df: pd.DataFrame, primary_key: str, text_column: str) -> 
     return work
 
 
-def sync_index(df: pd.DataFrame, config: VectorSearchConfig) -> None:
+def sync_index(df: pd.DataFrame, config: VectorSearchConfig | None = None) -> bool:
     """
     Creates or updates a Mosaic AI Vector Search index from facility rows.
-    Requires Databricks runtime/session with proper credentials.
+    Returns True if sync was theoretically successful.
     """
+    config = config or VectorSearchConfig()
     client = _get_client()
-    prepared = _prepare_for_index(df, config.primary_key, config.text_column)
-
-    index = client.get_index(endpoint_name=config.endpoint_name, index_name=config.index_name)
-
-    payload = prepared.to_dict(orient="records")
-    index.upsert(payload)
+    if not client:
+        return False
+        
+    try:
+        prepared = _prepare_for_index(df, config.primary_key, config.text_column)
+        index = client.get_index(endpoint_name=config.endpoint_name, index_name=config.index_name)
+        payload = prepared.to_dict(orient="records")
+        index.upsert(payload)
+        return True
+    except Exception as e:
+        logger.error(f"Failed to sync vector index: {e}")
+        return False
 
 
 def semantic_search(
     query_text: str,
-    config: VectorSearchConfig,
+    config: VectorSearchConfig | None = None,
     columns: list[str] | None = None,
     num_results: int = 10,
 ) -> list[dict[str, Any]]:
+    config = config or VectorSearchConfig()
     client = _get_client()
-    index = client.get_index(endpoint_name=config.endpoint_name, index_name=config.index_name)
-
-    result = index.similarity_search(
-        query_text=query_text,
-        columns=columns or [config.primary_key, config.text_column],
-        num_results=num_results,
-    )
-    return result.get("result", {}).get("data_array", [])
+    if not client:
+        return []
+        
+    try:
+        index = client.get_index(endpoint_name=config.endpoint_name, index_name=config.index_name)
+        result = index.similarity_search(
+            query_text=query_text,
+            columns=columns or [config.primary_key, config.text_column],
+            num_results=num_results,
+        )
+        return result.get("result", {}).get("data_array", [])
+    except Exception as e:
+        logger.error(f"Semantic search failed: {e}")
+        return []

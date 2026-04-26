@@ -1,0 +1,25 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Project specifics
+outputs/
+data/
+endpoints.json
+
+# Cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+.DS_Store
