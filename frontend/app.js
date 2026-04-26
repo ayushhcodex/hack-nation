@@ -78,27 +78,82 @@ async function runSearch() {
         const data = await res.json();
         
         document.getElementById('discover-results').style.display = 'block';
-        renderResults(data.results || []);
+        renderResults(data.results || [], data.summary || {}, data.exact_match !== false);
+        renderQueryEvaluation(data.evaluation || null);
         renderChainOfThought(data.chain_of_thought || []);
     } catch (e) {
         console.error('Query failed:', e);
         document.getElementById('facility-results').innerHTML = 
             '<div class="empty-state"><div class="empty-state-icon">⚠️</div><p>Query failed. Make sure the API is running.</p></div>';
+        const evalContainer = document.getElementById('query-eval');
+        if (evalContainer) evalContainer.innerHTML = '';
         document.getElementById('discover-results').style.display = 'block';
     }
     
     btn.innerHTML = '<span>Search</span><span class="btn-arrow">→</span>';
 }
 
-function renderResults(results) {
+function renderQueryEvaluation(evaluation) {
+    const container = document.getElementById('query-eval');
+    if (!container) return;
+    if (!evaluation) {
+        container.innerHTML = '';
+        return;
+    }
+
+    const rubric = evaluation.rubric || {};
+    const diagnostics = evaluation.diagnostics || {};
+    const overall = Number(evaluation.overall_score || 0);
+    const label = evaluation.confidence_label || 'low';
+
+    container.innerHTML = `
+        <div class="facility-card" style="margin-bottom: 14px;">
+            <div class="facility-header">
+                <div>
+                    <div class="facility-name">RAG Evaluation</div>
+                    <div class="facility-location">Estimated answer quality for this query</div>
+                </div>
+                <div class="trust-badge trust-${escapeHtml(label)}">
+                    <div class="trust-gauge" style="--pct: ${Math.round(overall)}"><span>${Math.round(overall)}%</span></div>
+                    <span class="trust-label">${escapeHtml(label)}</span>
+                </div>
+            </div>
+            <div class="facility-location">Discovery & Verification (35%): <strong>${rubric.discovery_verification ?? 0}%</strong></div>
+            <div class="facility-location">IDP Innovation (30%): <strong>${rubric.idp_innovation ?? 0}%</strong></div>
+            <div class="facility-location">Social Impact & Utility (25%): <strong>${rubric.social_impact_utility ?? 0}%</strong></div>
+            <div class="facility-location">UX Transparency (10%): <strong>${rubric.ux_transparency ?? 0}%</strong></div>
+            <div class="facility-location" style="margin-top: 8px;">Exact Match: <strong>${diagnostics.exact_match ? 'Yes' : 'No (relaxed fallback)'}</strong></div>
+            <div class="facility-location">Evidence Coverage: <strong>${diagnostics.evidence_coverage ?? 0}%</strong> • Consistency: <strong>${diagnostics.consistency ?? 0}%</strong></div>
+            <div class="facility-location">Grounded Evidence: <strong>${diagnostics.grounded_evidence ?? 0}%</strong> • Cross-pass Corroboration: <strong>${diagnostics.cross_pass_corroboration ?? 0}%</strong></div>
+        </div>
+    `;
+}
+
+function renderResults(results, summary = {}, exactMatch = true) {
     const container = document.getElementById('facility-results');
+    const hasBedSummary = Number.isFinite(summary.total_beds) || Number.isFinite(summary.facilities_with_bed_data);
     
     if (!results.length) {
         container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔍</div><p>No facilities found matching your query.</p></div>';
         return;
     }
-    
-    container.innerHTML = results.map((f, i) => {
+
+    const fallbackNotice = !exactMatch ? `
+        <div class="facility-card" style="border-left: 4px solid #e5a50a;">
+            <div class="facility-name">No Exact Capability Match</div>
+            <div class="facility-location">Showing best metadata-matched facilities (state/type). Try broader query or refresh 10k outputs.</div>
+        </div>
+    ` : '';
+
+    const summaryHtml = hasBedSummary ? `
+        <div class="facility-card" style="border-left: 4px solid var(--accent, #2ec27e);">
+            <div class="facility-name">Bed Availability Summary</div>
+            <div class="facility-location">Total Beds (matched set): <strong>${summary.total_beds ?? 0}</strong></div>
+            <div class="facility-location">Facilities with bed data: <strong>${summary.facilities_with_bed_data ?? 0}</strong></div>
+        </div>
+    ` : '';
+
+    container.innerHTML = fallbackNotice + summaryHtml + results.map((f, i) => {
         const trustPct = Math.round((f.trust_score || 0) * 100);
         const band = f.trust_band || 'low';
         const contradictions = parseJSON(f.contradiction_flags);

@@ -54,11 +54,32 @@ DATABRICKS_TOKEN="dapi..."
 LLM_ENDPOINT_NAME="databricks-meta-llama-3-3-70b-instruct"
 ```
 
-2. **Start the API & Web Server:**
+2. **Generate pipeline outputs (required before using `/api/stats` and `/api/query`):**
 ```bash
+# Linux/macOS
 export PYTHONPATH=src
-python3 -m uvicorn healthcare_intel.api:app --reload --port 8000
+python scripts/run_pipeline.py --dataset data/VF_Hackathon_Dataset_India_Large.csv --output outputs --disable-mlflow
 ```
 
-3. **Explore HealthIntel:**
+```powershell
+# Windows PowerShell
+$env:PYTHONPATH = (Resolve-Path .\src).Path
+# Optional local-only mode (skip remote Databricks calls)
+$env:DATABRICKS_TOKEN = ''
+$env:DATABRICKS_HOST = 'https://dbc-xxxxxxx.cloud.databricks.com'
+python .\scripts\run_pipeline.py --dataset .\data\VF_Hackathon_Dataset_India_Large.csv --output .\outputs --disable-mlflow
+```
+
+3. **Start the API & Web Server:**
+```bash
+# Linux/macOS
+python -m uvicorn --app-dir src healthcare_intel.api:app --reload --port 8000
+```
+
+```powershell
+# Windows PowerShell
+python -m uvicorn --app-dir src healthcare_intel.api:app --reload --port 8000
+```
+
+4. **Explore HealthIntel:**
 Navigate to `http://127.0.0.1:8000/` to test the Discovery search engine and visualize the Medical Deserts Map in real-time.

@@ -1,0 +1,692 @@
+[
+  {
+    "state": "Andhra Pradesh",
+    "pin_code": "520002",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 635.6,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 430.0,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 16.5125618,
+    "lon": 80.63560486
+  },
+  {
+    "state": "Andhra Pradesh",
+    "pin_code": "522006",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 604.9,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 405.9,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 16.32213974,
+    "lon": 80.41371155
+  },
+  {
+    "state": "Delhi",
+    "pin_code": "110009",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1886.9,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 13.1,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 28.69453621,
+    "lon": 77.20397186
+  },
+  {
+    "state": "Delhi",
+    "pin_code": "110017",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1868.7,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 11.2,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 28.53078651,
+    "lon": 77.22040558
+  },
+  {
+    "state": "Delhi",
+    "pin_code": "110025",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 1,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1871.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 6.1,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 28.55283737,
+    "lon": 77.29936218
+  },
+  {
+    "state": "Gujarat",
+    "pin_code": "380014",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1356.8,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 723.3,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 23.00222206,
+    "lon": 72.5178299
+  },
+  {
+    "state": "Gujarat",
+    "pin_code": "382021",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1374.4,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 695.0,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 23.23186874,
+    "lon": 72.66825104
+  },
+  {
+    "state": "Haryana",
+    "pin_code": "121005",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1848.9,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 4.5,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 28.35308838,
+    "lon": 77.2971344
+  },
+  {
+    "state": "Himachal Pradesh",
+    "pin_code": "174301",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 2185.8,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 199.2,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 31.35682106,
+    "lon": 76.31254578
+  },
+  {
+    "state": "Jharkhand",
+    "pin_code": "831005",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1545.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 114.0,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 22.80377388,
+    "lon": 86.21516418
+  },
+  {
+    "state": "Karnataka",
+    "pin_code": "560068",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 127.8,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 262.3,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 12.85879326,
+    "lon": 77.61141968
+  },
+  {
+    "state": "Karnataka",
+    "pin_code": "560092",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 149.6,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 267.2,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 13.06017303,
+    "lon": 77.58889771
+  },
+  {
+    "state": "Kerala",
+    "pin_code": "670104",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 209.4,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 215.0,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 11.76000309,
+    "lon": 75.48927307
+  },
+  {
+    "state": "Kerala",
+    "pin_code": "670694",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 203.9,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 214.9,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 11.78105927,
+    "lon": 75.54026794
+  },
+  {
+    "state": "Kerala",
+    "pin_code": "673011",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 1,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 185.4,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 152.8,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 11.27191544,
+    "lon": 75.77529907
+  },
+  {
+    "state": "Madhya Pradesh",
+    "pin_code": "457777",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1289.7,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 580.3,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 23.00627708,
+    "lon": 74.57763672
+  },
+  {
+    "state": "Madhya Pradesh",
+    "pin_code": "462003",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 1,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1279.8,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 445.1,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 23.23569489,
+    "lon": 77.40151215
+  },
+  {
+    "state": "Maharashtra",
+    "pin_code": "400001",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 939.8,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 1035.9,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 18.93402863,
+    "lon": 72.83262634
+  },
+  {
+    "state": "Maharashtra",
+    "pin_code": "411041",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 842.4,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 923.8,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 18.45826721,
+    "lon": 73.8122406
+  },
+  {
+    "state": "Maharashtra",
+    "pin_code": "413001",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 681.3,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 709.1,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 17.6764183,
+    "lon": 75.90207672
+  },
+  {
+    "state": "Maharashtra",
+    "pin_code": "422001",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 997.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 910.0,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 19.98791885,
+    "lon": 73.78393555
+  },
+  {
+    "state": "Punjab",
+    "pin_code": "143001",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 2234.3,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 112.3,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 31.68192101,
+    "lon": 74.86514282
+  },
+  {
+    "state": "Punjab",
+    "pin_code": "143531",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 2277.9,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 82.2,
+        "urgency": "high"
+      }
+    ],
+    "lat": 32.13368988,
+    "lon": 75.47664642
+  },
+  {
+    "state": "Tamil Nadu",
+    "pin_code": "600023",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 343.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 50.7,
+        "urgency": "high"
+      }
+    ],
+    "lat": 13.09267807,
+    "lon": 80.24536896
+  },
+  {
+    "state": "Tamil Nadu",
+    "pin_code": "600035",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 339.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 44.0,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 13.02940559,
+    "lon": 80.23538971
+  },
+  {
+    "state": "Tamil Nadu",
+    "pin_code": "608501",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 251.4,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 135.8,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 11.5095892,
+    "lon": 79.70980835
+  },
+  {
+    "state": "Tamil Nadu",
+    "pin_code": "641604",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 71.5,
+        "urgency": "high"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 167.5,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 11.08645248,
+    "lon": 77.34620667
+  },
+  {
+    "state": "Telangana",
+    "pin_code": "500013",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 641.1,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 548.9,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 17.39773941,
+    "lon": 78.48268127
+  },
+  {
+    "state": "Thane",
+    "pin_code": "421302",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 1,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 960.0,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 1020.2,
+        "urgency": "critical"
+      }
+    ],
+    "lat": 19.25124741,
+    "lon": 73.01670837
+  },
+  {
+    "state": "Uttar Pradesh",
+    "pin_code": "110092",
+    "desert_score": 1.0,
+    "risk_tier": "critical",
+    "existing_facilities": 1,
+    "existing_hospitals": 0,
+    "missing_capabilities": "Oncology, Dialysis, Trauma, Emergency Surgery, Functional Icu",
+    "priority_deployments": [
+      {
+        "capability": "Oncology",
+        "nearest_km": 1880.2,
+        "urgency": "critical"
+      },
+      {
+        "capability": "Trauma",
+        "nearest_km": 4.8,
+        "urgency": "moderate"
+      }
+    ],
+    "lat": 28.63460541,
+    "lon": 77.33288574
+  }
+]

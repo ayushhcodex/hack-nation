@@ -8,7 +8,7 @@ env.bak/
 venv.bak/
 
 # Project specifics
-outputs/
+# outputs/
 data/
 endpoints.json
 

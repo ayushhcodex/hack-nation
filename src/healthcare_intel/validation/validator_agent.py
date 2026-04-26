@@ -15,8 +15,13 @@ MEDICAL_STANDARDS = {
 
 
 def _llm_validate_capabilities(capabilities: dict, metadata: dict) -> list[str]:
-    if not settings.databricks_host or "YOUR-DATABRICKS" in settings.databricks_host:
-        raise ValueError("Missing DATABRICKS_HOST")
+    if (
+        not settings.databricks_host
+        or settings.databricks_host == "https://dbc-xxxxxxx.cloud.databricks.com"
+        or "YOUR-DATABRICKS" in settings.databricks_host
+        or not settings.databricks_token
+    ):
+        raise ValueError("Databricks LLM credentials not configured")
 
     url = f"{settings.databricks_host.rstrip('/')}/serving-endpoints/{settings.llm_endpoint_name}/invocations"
     headers = {

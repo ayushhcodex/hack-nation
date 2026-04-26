@@ -212,7 +212,13 @@ def _pass2_unstructured(row: pd.Series) -> dict[str, dict]:
     combined_text = " ".join(text_fields.values())
     combined_text = re.sub(r"\s+", " ", combined_text).strip()
     
-    if len(combined_text) > 10:
+    llm_ready = (
+        bool(settings.databricks_token)
+        and settings.databricks_host
+        and settings.databricks_host != "https://dbc-xxxxxxx.cloud.databricks.com"
+    )
+
+    if len(combined_text) > 10 and llm_ready:
         try:
             llm_res = _llm_extract_capabilities(combined_text)
             results = {}

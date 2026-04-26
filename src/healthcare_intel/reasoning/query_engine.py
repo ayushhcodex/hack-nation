@@ -33,6 +33,7 @@ class ParsedQuery:
     raw_query: str
     required_capabilities: list[str]
     required_state: str | None
+    required_facility_type: str | None
 
 
 def _parse_query_fallback(query: str, known_states: list[str]) -> ParsedQuery:
@@ -48,10 +49,19 @@ def _parse_query_fallback(query: str, known_states: list[str]) -> ParsedQuery:
             required_state = state
             break
 
+    required_facility_type = None
+    if "hospital" in q or "hospitals" in q:
+        required_facility_type = "hospital"
+    elif "clinic" in q or "clinics" in q:
+        required_facility_type = "clinic"
+    elif "pharmacy" in q or "pharmacies" in q:
+        required_facility_type = "pharmacy"
+
     return ParsedQuery(
         raw_query=query,
         required_capabilities=required_capabilities,
         required_state=required_state,
+        required_facility_type=required_facility_type,
     )
 
 
@@ -86,6 +96,7 @@ Output Format:
 {{
   "required_capabilities": ["list_of_exact_column_names_needed_to_satisfy_intent"],
   "required_state": "state_name_if_mentioned_or_null",
+    "required_facility_type": "hospital|clinic|pharmacy|dentist|or_null",
   "reasoning": "brief explanation"
 }}
 
@@ -109,11 +120,18 @@ Rules:
             state = result.get("required_state")
             if state and state.lower() not in [s.lower() for s in known_states]:
                 state = None
+
+            facility_type = result.get("required_facility_type")
+            if facility_type:
+                facility_type = str(facility_type).strip().lower()
+                if facility_type not in {"hospital", "clinic", "pharmacy", "dentist"}:
+                    facility_type = None
                 
             return ParsedQuery(
                 raw_query=query,
                 required_capabilities=req_caps,
                 required_state=state,
+                required_facility_type=facility_type,
             ), result.get("reasoning", "")
     except Exception as e:
         return None, str(e)
@@ -127,6 +145,7 @@ def parse_query(query: str, known_states: list[str], trace_steps: list) -> Parse
             "action": "Parsed query logic",
             "detail": f"Constraints: {parsed.required_capabilities}. Reasoning: {reason[:100]}",
             "state_filter": parsed.required_state or "none",
+            "facility_type_filter": parsed.required_facility_type or "none",
         })
         return parsed
         
@@ -141,6 +160,7 @@ def parse_query(query: str, known_states: list[str], trace_steps: list) -> Parse
         "action": "Keyword regex fallback matching",
         "detail": f"Extracted capabilities: {fallback_res.required_capabilities or 'none'}",
         "state_filter": fallback_res.required_state or "none",
+        "facility_type_filter": fallback_res.required_facility_type or "none",
     })
     return fallback_res
 
@@ -174,7 +194,11 @@ def run_query(
             # Default to fetching a broad set then applying our filters locally
             vec_res = semantic_search(query, num_results=200)
             if vec_res:
-                semantic_results = [r.get("facility_id") for r in vec_res if "facility_id" in r]
+                semantic_results = [
+                    str(r.get("facility_id"))
+                    for r in vec_res
+                    if isinstance(r, dict) and r.get("facility_id")
+                ]
                 res_count = len(semantic_results)
                 
                 # Boost matched items or filter by them. If we have hits, we only keep hits.
@@ -208,9 +232,36 @@ def run_query(
                 working["address_stateOrRegion"].str.lower() == parsed.required_state.lower()
             ]
 
+        if parsed.required_facility_type and "facilityTypeId" in working.columns:
+            working = working[
+                working["facilityTypeId"].astype(str).str.lower() == parsed.required_facility_type
+            ]
+
         for cap in parsed.required_capabilities:
             if cap in working.columns:
                 working = working[working[cap] == True]  # noqa: E712
+
+        # If strict capability filters produce no rows, fall back to metadata-only matches
+        # so users still get a useful answer set instead of an empty result list.
+        if working.empty and parsed.required_capabilities:
+            relaxed = facilities.copy()
+            if parsed.required_state:
+                relaxed = relaxed[
+                    relaxed["address_stateOrRegion"].str.lower() == parsed.required_state.lower()
+                ]
+            if parsed.required_facility_type and "facilityTypeId" in relaxed.columns:
+                relaxed = relaxed[
+                    relaxed["facilityTypeId"].astype(str).str.lower() == parsed.required_facility_type
+                ]
+
+            if not relaxed.empty:
+                missing_caps = [cap for cap in parsed.required_capabilities if cap in facilities.columns]
+                trace_steps.append({
+                    "agent": "Fallback",
+                    "action": "No exact capability match; relaxed to metadata filters",
+                    "detail": f"No rows matched {missing_caps}. Returned best state/type matches instead.",
+                })
+                working = relaxed
 
         if latitude is not None and longitude is not None:
             working = working.copy()
@@ -239,11 +290,13 @@ def run_query(
 
         def _citations(row: pd.Series) -> list[str]:
             raw = row.get("extraction_evidence", "{}")
-            evidence = json.loads(raw) if isinstance(raw, str) else {}
+            evidence = json.loads(raw) if isinstance(raw, str) else (raw if isinstance(raw, dict) else {})
             snippets = []
             for v in evidence.values():
                 if isinstance(v, list):
                     snippets.extend(v)
+                elif isinstance(v, dict) and isinstance(v.get("evidence"), list):
+                    snippets.extend([str(x) for x in v.get("evidence", []) if str(x).strip()])
             return snippets[:5]
 
         working["matched_capabilities"] = ", ".join(parsed.required_capabilities)
@@ -262,6 +315,7 @@ def run_query(
             "address_city",
             "address_stateOrRegion",
             "address_zipOrPostcode",
+            "capacity",
             "trust_score",
             "trust_band",
             "distance_km",

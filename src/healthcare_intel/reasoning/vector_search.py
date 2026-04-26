@@ -80,7 +80,29 @@ def semantic_search(
             columns=columns or [config.primary_key, config.text_column],
             num_results=num_results,
         )
-        return result.get("result", {}).get("data_array", [])
+
+        # Databricks may return either row dicts or row arrays with a separate column manifest.
+        data_array = result.get("result", {}).get("data_array", [])
+        if not data_array:
+            return []
+
+        if isinstance(data_array[0], dict):
+            return data_array
+
+        columns_meta = result.get("manifest", {}).get("columns", [])
+        col_names = [c.get("name") for c in columns_meta if isinstance(c, dict) and c.get("name")]
+
+        # Fallback to requested output columns when manifest is not present.
+        if not col_names:
+            col_names = columns or [config.primary_key, config.text_column]
+
+        normalized: list[dict[str, Any]] = []
+        for row in data_array:
+            if isinstance(row, (list, tuple)):
+                normalized.append({k: v for k, v in zip(col_names, row)})
+            elif isinstance(row, dict):
+                normalized.append(row)
+        return normalized
     except Exception as e:
         logger.error(f"Semantic search failed: {e}")
         return []
