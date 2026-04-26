@@ -150,6 +150,9 @@ function renderResults(results, summary = {}, exactMatch = true) {
             <div class="facility-name">Bed Availability Summary</div>
             <div class="facility-location">Total Beds (matched set): <strong>${summary.total_beds ?? 0}</strong></div>
             <div class="facility-location">Facilities with bed data: <strong>${summary.facilities_with_bed_data ?? 0}</strong></div>
+            ${Number.isFinite(summary.matched_facilities) ? `<div class="facility-location">Matched facilities: <strong>${summary.matched_facilities}</strong></div>` : ''}
+            ${Number.isFinite(summary.bed_data_coverage_pct) ? `<div class="facility-location">Bed data coverage: <strong>${summary.bed_data_coverage_pct}%</strong></div>` : ''}
+            ${Number.isFinite(summary.oxygen_facilities_matched) ? `<div class="facility-location">Oxygen-matched facilities: <strong>${summary.oxygen_facilities_matched}</strong></div>` : ''}
         </div>
     ` : '';
 

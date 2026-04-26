@@ -279,9 +279,16 @@ def query_facilities(payload: QueryRequest) -> dict:
     if "bed" in lower_query and "capacity" in result.columns:
         capacity = pd.to_numeric(result["capacity"], errors="coerce")
         valid_capacity = capacity.dropna()
+        oxygen_matched = 0
+        if "has_oxygen" in result.columns:
+            oxygen_matched = int(result["has_oxygen"].fillna(False).sum())
+
         summary = {
             "total_beds": int(valid_capacity.sum()) if not valid_capacity.empty else 0,
             "facilities_with_bed_data": int(valid_capacity.count()),
+            "matched_facilities": int(len(result)),
+            "oxygen_facilities_matched": oxygen_matched,
+            "bed_data_coverage_pct": round((len(valid_capacity) / max(1, len(result))) * 100.0, 1),
         }
 
     evaluation = _compute_query_evaluation(

@@ -52,6 +52,9 @@ def _parse_query_fallback(query: str, known_states: list[str]) -> ParsedQuery:
     required_facility_type = None
     if "hospital" in q or "hospitals" in q:
         required_facility_type = "hospital"
+    elif "bed" in q or "beds" in q:
+        # In healthcare search intent, bed counts usually refer to hospitals.
+        required_facility_type = "hospital"
     elif "clinic" in q or "clinics" in q:
         required_facility_type = "clinic"
     elif "pharmacy" in q or "pharmacies" in q:
@@ -104,6 +107,7 @@ Rules:
 - Do NOT hallucinate columns. ONLY pick from the Available Capability Columns list.
 - Use explicit semantic reasoning based on medical knowledge (e.g. 'dental' => 'has_dental', 'heart' => 'has_cardiology').
 - If they ask for part-time, pick 'uses_parttime_doctors'.
+- If the user asks for bed count/availability and does not specify a type, set required_facility_type="hospital".
 - Return strictly valid JSON.
 """
     data = {"messages": [{"role": "user", "content": prompt}], "max_tokens": 500, "temperature": 0.1}
@@ -127,6 +131,10 @@ Rules:
                 facility_type = str(facility_type).strip().lower()
                 if facility_type not in {"hospital", "clinic", "pharmacy", "dentist"}:
                     facility_type = None
+
+            # Heuristic guardrail: bed-intent queries should default to hospitals.
+            if ("bed" in query.lower() or "beds" in query.lower()) and not facility_type:
+                facility_type = "hospital"
                 
             return ParsedQuery(
                 raw_query=query,
@@ -327,7 +335,9 @@ def run_query(
             "address_city",
             "address_stateOrRegion",
             "address_zipOrPostcode",
+            "facilityTypeId",
             "capacity",
+            "has_oxygen",
             "trust_score",
             "trust_band",
             "distance_km",
