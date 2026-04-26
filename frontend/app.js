@@ -56,10 +56,6 @@ function setupSearch() {
     
     btn.addEventListener('click', runSearch);
     input.addEventListener('keypress', e => { if (e.key === 'Enter') runSearch(); });
-    
-    document.querySelectorAll('.cap-toggle').forEach(toggle => {
-        toggle.addEventListener('click', () => toggle.classList.toggle('active'));
-    });
 }
 
 async function runSearch() {
@@ -367,6 +363,7 @@ function renderFacilityMarkers(facilities) {
                 <p>Trust: <span class="trust-inline" style="color:${color}">${((f.trust_score || 0) * 100).toFixed(0)}% (${f.trust_band})</span></p>
                 <p>Capabilities: ${f.capabilities_found || 0}</p>
                 <button class="popup-detail-btn" onclick="openFacilityModal('${f.facility_id}')">View Full Audit Report</button>
+                <a href="https://www.google.com/maps/dir/?api=1&destination=${f.latitude},${f.longitude}" target="_blank" class="popup-detail-btn" style="background:#3b82f6; margin-top: 6px; text-align: center; display: block; text-decoration: none; color: white;">Get Directions</a>
             </div>
         `);
         
